@@ -1,0 +1,6 @@
+[submodule "backend"]
+	path = backend
+	url = file:///Users/ylberprapashtica/Projects/milyfe/backend
+[submodule "frontend"]
+	path = frontend
+	url = file:///Users/ylberprapashtica/Projects/milyfe/frontend
