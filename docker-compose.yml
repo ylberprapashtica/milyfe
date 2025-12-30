@@ -1,0 +1,150 @@
+# Main docker-compose.yml that orchestrates backend and frontend submodules
+# This file uses the docker-compose files from the submodules
+
+services:
+  # Backend services (from backend submodule)
+  postgres:
+    image: postgres:18-alpine
+    container_name: milyfe_postgres
+    environment:
+      POSTGRES_DB: finances
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - milyfe_network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: milyfe_backend
+    volumes:
+      - ./backend:/app
+      - backend_vendor:/app/vendor
+    working_dir: /app
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: finances
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+      XDEBUG_MODE: debug
+      XDEBUG_CONFIG: client_host=host.docker.internal client_port=9000
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      test: ["CMD", "php", "-r", "exit((file_exists('/app/vendor/autoload.php') && file_exists('/app/bootstrap/app.php')) ? 0 : 1);"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    restart: unless-stopped
+    networks:
+      - milyfe_network
+
+  nginx:
+    image: nginx:alpine
+    container_name: milyfe_nginx
+    ports:
+      - "8080:80"
+    volumes:
+      - ./backend/docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./backend:/app
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "sh", "-c", "pgrep nginx > /dev/null"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    restart: unless-stopped
+    networks:
+      - milyfe_network
+
+  queue:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: milyfe_queue
+    command: sh -c "composer install --no-interaction --prefer-dist && php artisan queue:work --verbose --tries=3 --timeout=90"
+    volumes:
+      - ./backend:/app
+      - backend_vendor:/app/vendor
+    working_dir: /app
+    depends_on:
+      postgres:
+        condition: service_healthy
+      backend:
+        condition: service_healthy
+    environment:
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: finances
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+      XDEBUG_MODE: debug
+      XDEBUG_CONFIG: client_host=host.docker.internal client_port=9001
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      test: ["CMD", "php", "artisan", "queue:work", "--help"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+    networks:
+      - milyfe_network
+
+  # Frontend service (from frontend submodule)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: milyfe_frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    working_dir: /app
+    environment:
+      - REACT_APP_API_URL=http://localhost:8080/api
+      - HOST=0.0.0.0
+    depends_on:
+      nginx:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+    networks:
+      - milyfe_network
+
+volumes:
+  postgres_data:
+  backend_vendor:
+
+networks:
+  milyfe_network:
+    driver: bridge
+
