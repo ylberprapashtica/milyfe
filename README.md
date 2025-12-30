@@ -11,6 +11,26 @@ This repository contains:
 
 ## Getting Started
 
+### Setting Up Remote Repositories
+
+Before cloning, you'll need to set up three separate remote repositories:
+
+1. **Backend repository**: Create a remote repo (e.g., `milyfe-backend`)
+2. **Frontend repository**: Create a remote repo (e.g., `milyfe-frontend`)
+3. **Main repository**: Create a remote repo (e.g., `milyfe`)
+
+Then update the submodule URLs in `.gitmodules` to point to your remote repositories:
+
+```bash
+# Update backend submodule URL
+git config submodule.backend.url <your-backend-repo-url>
+git submodule sync
+
+# Update frontend submodule URL
+git config submodule.frontend.url <your-frontend-repo-url>
+git submodule sync
+```
+
 ### Initial Setup
 
 1. Clone this repository with submodules:
