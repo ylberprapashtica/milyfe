@@ -1,0 +1,19 @@
+# Main docker-compose.prod.yml that orchestrates backend and frontend microservices
+# This file includes the docker-compose.prod files from the microservices
+
+include:
+  - path: ./backend/docker-compose.prod.yml
+  - path: ./frontend/docker-compose.prod.yml
+
+# Define the shared network
+networks:
+  milyfe_network:
+    driver: bridge
+
+# Define shared volumes (if needed)
+volumes:
+  postgres_data:
+  backend_public:
+  backend_storage:
+  backend_bootstrap_cache:
+
