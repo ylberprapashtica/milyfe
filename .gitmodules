@@ -1,6 +1,6 @@
 [submodule "backend"]
 	path = backend
-	url = file:///Users/ylberprapashtica/Projects/milyfe/backend
+	url = https://github.com/ylberprapashtica/milyfe-backend.git
 [submodule "frontend"]
 	path = frontend
-	url = file:///Users/ylberprapashtica/Projects/milyfe/frontend
+	url = https://github.com/ylberprapashtica/milyfe-frontend.git
