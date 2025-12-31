@@ -21,10 +21,10 @@ Environment files should be configured in the **backend** and **frontend** direc
 1. **Copy the example files to `.env` files:**
    ```bash
    # Backend
-   cp backend/env.example backend/.env
+   cp backend/.env.example backend/.env
    
    # Frontend
-   cp frontend/env.example frontend/.env
+   cp frontend/.env.example frontend/.env
    ```
 
 2. **Update the values in each `.env` file** with your production configuration.
