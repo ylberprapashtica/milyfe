@@ -39,22 +39,22 @@ Environment files should be configured in the **backend** and **frontend** direc
 
 1. **Build the production images:**
    ```bash
-   docker-compose -f docker-compose.prod.yml build
+   docker compose -f docker-compose.prod.yml build
    ```
 
 2. **Start all services:**
    ```bash
-   docker-compose -f docker-compose.prod.yml up -d
+   docker compose -f docker-compose.prod.yml up -d
    ```
 
 3. **Run database migrations:**
    ```bash
-   docker-compose -f docker-compose.prod.yml exec backend php artisan migrate --force
+   docker compose -f docker-compose.prod.yml exec backend php artisan migrate --force
    ```
 
 4. **Check service status:**
    ```bash
-   docker-compose -f docker-compose.prod.yml ps
+   docker compose -f docker-compose.prod.yml ps
    ```
 
 ## Service Management
@@ -62,26 +62,26 @@ Environment files should be configured in the **backend** and **frontend** direc
 ### View Logs
 ```bash
 # All services
-docker-compose -f docker-compose.prod.yml logs -f
+docker compose -f docker-compose.prod.yml logs -f
 
 # Specific service
-docker-compose -f docker-compose.prod.yml logs -f backend
-docker-compose -f docker-compose.prod.yml logs -f frontend_nginx
+docker compose -f docker-compose.prod.yml logs -f backend
+docker compose -f docker-compose.prod.yml logs -f frontend_nginx
 ```
 
 ### Stop Services
 ```bash
-docker-compose -f docker-compose.prod.yml down
+docker compose -f docker-compose.prod.yml down
 ```
 
 ### Stop and Remove Volumes (⚠️ This will delete data)
 ```bash
-docker-compose -f docker-compose.prod.yml down -v
+docker compose -f docker-compose.prod.yml down -v
 ```
 
 ### Restart a Service
 ```bash
-docker-compose -f docker-compose.prod.yml restart backend
+docker compose -f docker-compose.prod.yml restart backend
 ```
 
 ## Production Optimizations
@@ -120,7 +120,7 @@ The production setup includes:
 All services include health checks. Check service health:
 
 ```bash
-docker-compose -f docker-compose.prod.yml ps
+docker compose -f docker-compose.prod.yml ps
 ```
 
 ## Troubleshooting
@@ -128,21 +128,21 @@ docker-compose -f docker-compose.prod.yml ps
 ### Database Connection Issues
 Ensure the database is healthy before the backend starts:
 ```bash
-docker-compose -f docker-compose.prod.yml logs postgres
+docker compose -f docker-compose.prod.yml logs postgres
 ```
 
 ### Clear Laravel Cache
 ```bash
-docker-compose -f docker-compose.prod.yml exec backend php artisan cache:clear
-docker-compose -f docker-compose.prod.yml exec backend php artisan config:clear
-docker-compose -f docker-compose.prod.yml exec backend php artisan route:clear
-docker-compose -f docker-compose.prod.yml exec backend php artisan view:clear
+docker compose -f docker-compose.prod.yml exec backend php artisan cache:clear
+docker compose -f docker-compose.prod.yml exec backend php artisan config:clear
+docker compose -f docker-compose.prod.yml exec backend php artisan route:clear
+docker compose -f docker-compose.prod.yml exec backend php artisan view:clear
 ```
 
 ### Rebuild After Code Changes
 ```bash
-docker-compose -f docker-compose.prod.yml build --no-cache
-docker-compose -f docker-compose.prod.yml up -d
+docker compose -f docker-compose.prod.yml build --no-cache
+docker compose -f docker-compose.prod.yml up -d
 ```
 
 ## Notes
