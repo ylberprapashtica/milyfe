@@ -60,13 +60,39 @@ Environment files should be configured in the **backend** and **frontend** direc
 ## Service Management
 
 ### View Logs
+
+**Queue Worker Logs:**
+```bash
+docker compose -f docker-compose.prod.yml logs -f queue
+```
+
+**Laravel Log Files (Direct Access):**
+
+Access Laravel log files directly inside the container (not Docker logs):
+
+```bash
+# Follow Laravel log file in real-time and View last 50 lines
+docker compose -f docker-compose.prod.yml exec backend tail -nf 50 storage/logs/laravel.log
+
+# Search for errors in log file
+docker compose -f docker-compose.prod.yml exec backend grep -i error storage/logs/laravel.log
+
+# Access container shell to browse logs interactively
+docker compose -f docker-compose.prod.yml exec backend sh
+# Then inside container: cd storage/logs && ls -lah
+```
+
+
+
 ```bash
 # All services
 docker compose -f docker-compose.prod.yml logs -f
 
-# Specific service
-docker compose -f docker-compose.prod.yml logs -f backend
+# Frontend
 docker compose -f docker-compose.prod.yml logs -f frontend_nginx
+
+# Database
+docker compose -f docker-compose.prod.yml logs -f postgres
 ```
 
 ### Stop Services
