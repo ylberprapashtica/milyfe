@@ -7,6 +7,14 @@ The production setup follows the same structure as development:
 - `backend/docker-compose.prod.yml` - backend services (postgres, backend, nginx, queue)
 - `frontend/docker-compose.prod.yml` - frontend service
 
+## Connecting to production
+
+SSH into the production server:
+
+```bash
+ssh root@46.224.56.24
+```
+
 ## Prerequisites
 
 - Docker and Docker Compose installed
